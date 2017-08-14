@@ -539,4 +539,15 @@
                       (map #(select-keys % [:round :event])))
                  [{:round 0 :event "apply"}
                   {:round 0 :event "autoapprove"}
-                  {:round 1 :event "autoapprove"}])))))))
+                  {:round 1 :event "autoapprove"}]))
+          (testing "only once"
+            (db/create-workflow-approver! {:wfid auto-wf :appruserid "event-test-approver" :round 1})
+            (let [auto-app (applications/create-new-draft auto-item)]
+              (is (= (fetch auto-app) {:curround 0 :state "draft"}))
+              (applications/submit-application auto-app)
+              (is (= (fetch auto-app) {:curround 1 :state "applied"}))
+              (is (= (->> (applications/get-application-state auto-app)
+                          :events
+                          (map #(select-keys % [:round :event])))
+                     [{:round 0 :event "apply"}
+                      {:round 0 :event "autoapprove"}])))))))))
