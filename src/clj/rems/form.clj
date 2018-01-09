@@ -14,6 +14,7 @@
                                           get-draft-form-for
                                           get-form-for
                                           is-applicant?
+                                          can-delete?
                                           make-draft-application
                                           submit-application]]
             [rems.db.catalogue :refer [disabled-catalogue-item?]]
@@ -234,6 +235,8 @@
        (getx application :review-type)
        (events/review-form application)
        ;; TODO duplicates logic from form-fields
+       (true? (can-delete? application))
+       (events/approved-form application)
        (not (is-applicant? application))
        [:div.row
         [:div.col.commands

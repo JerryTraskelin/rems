@@ -134,6 +134,11 @@
    (back-to-actions-button)
    (review-button app)])
 
+(defn approved-form [app]
+  [:div.commands
+   (back-to-actions-button)
+   (close-button app)])
+
 ;; TODO handle closing when no draft or anything saved yet
 (defroutes events-routes
   (POST "/event/:id/:round" [id round :as request]

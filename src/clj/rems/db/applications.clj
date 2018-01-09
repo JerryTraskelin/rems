@@ -127,6 +127,11 @@
 (defn is-applicant? [application]
   (= (:applicantuserid application) (get-user-id)))
 
+(defn can-delete? [application]
+  (let [application-id (:id application)]
+    (and (true? (is-approver? application-id))
+         (not (= "closed" (:state application))))))
+
 (defn may-see-application? [application]
   (let [application-id (:id application)]
     (or (is-applicant? application)
@@ -668,6 +673,6 @@
 
 (defn close-application [application-id round msg]
   (let [application (get-application-state application-id)]
-    (when-not (or (is-applicant? application) (can-approve? application))
-      (throw-unauthorized))
+    (when-not (or (is-applicant? application) (is-approver? (:id application)))
+    (throw-unauthorized))
     (unjudge-application application "close" round msg)))
